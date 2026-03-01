@@ -1,30 +1,22 @@
-import { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import StudentDashboard from './pages/StudentDashboard';
+import InstructorDashboard from './pages/InstructorDashboard';
 import ClassroomPage from './pages/ClassroomPage';
 
 function App() {
-    const [inClass, setInClass] = useState(false);
-
-    if (inClass) {
-        return (
-            <ClassroomPage
-                roomName="Math101"
-                studentName="Student_John"
-                onLeave={() => setInClass(false)}
-            />
-        );
-    }
-
     return (
-        <div style={{ padding: '50px', textAlign: 'center', fontFamily: 'sans-serif' }}>
-            <h1>Welcome to the LMS Dashboard</h1>
-            <p>Your next class is ready.</p>
-            <button
-                onClick={() => setInClass(true)}
-                style={{ padding: '10px 20px', fontSize: '18px', cursor: 'pointer' }}
-            >
-                Join Live Class
-            </button>
-        </div>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Navigate to="/login" replace />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/student" element={<StudentDashboard />} />
+                <Route path="/instructor" element={<InstructorDashboard />} />
+                <Route path="/classroom/:sessionId" element={<ClassroomPage />} />
+            </Routes>
+        </BrowserRouter>
     );
 }
 

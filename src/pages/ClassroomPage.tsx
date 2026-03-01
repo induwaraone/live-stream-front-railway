@@ -1,30 +1,31 @@
 import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { LiveKitRoom, VideoConference, RoomAudioRenderer } from '@livekit/components-react';
 import '@livekit/components-styles';
 import { fetchLiveKitToken } from '../services/api';
 
-interface ClassroomProps {
-    roomName: string;
-    studentName: string;
-    onLeave: () => void;
-}
-
-export default function ClassroomPage({ roomName, studentName, onLeave }: ClassroomProps) {
+export default function ClassroomPage() {
+    const { sessionId } = useParams<{ sessionId: string }>();
+    const navigate = useNavigate();
     const [token, setToken] = useState<string>("");
-    // IMPORTANT: Replace with your actual Tailscale IP!
+
+    // TODO: Phase 2 will replace this with the actual logged-in user
+    const participantName = "TestUser";
+    // IMPORTANT: Replace with your actual LiveKit server URL
     const serverUrl = "ws://100.124.9.102:7880";
 
     useEffect(() => {
+        if (!sessionId) return;
         const getToken = async () => {
             try {
-                const fetchedToken = await fetchLiveKitToken(studentName, roomName);
+                const fetchedToken = await fetchLiveKitToken(participantName, sessionId);
                 setToken(fetchedToken);
             } catch (error) {
                 console.error("Error joining room:", error);
             }
         };
         getToken();
-    }, [roomName, studentName]);
+    }, [sessionId]);
 
     if (!token) return <div style={{ padding: '20px' }}>Connecting to classroom...</div>;
 
@@ -36,7 +37,7 @@ export default function ClassroomPage({ roomName, studentName, onLeave }: Classr
                 token={token}
                 serverUrl={serverUrl}
                 data-lk-theme="default"
-                onDisconnected={onLeave}
+                onDisconnected={() => navigate(-1)}
             >
                 <VideoConference />
                 <RoomAudioRenderer />
