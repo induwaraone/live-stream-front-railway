@@ -9,7 +9,7 @@ import {
 } from 'antd';
 import {
     LogoutOutlined, PlusOutlined, CalendarOutlined, EditOutlined, DeleteOutlined,
-    PlayCircleOutlined, StopOutlined, VideoCameraOutlined
+    PlayCircleOutlined, StopOutlined, VideoCameraOutlined, MessageOutlined
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
@@ -113,6 +113,7 @@ export default function InstructorDashboard() {
                 <Title level={4} style={{ margin: 0 }}>👨‍🏫 Instructor Dashboard</Title>
                 <Space>
                     <Text>Welcome, {user?.fullName}</Text>
+                    <Button icon={<MessageOutlined />} onClick={() => navigate('/chat')}>Messages</Button>
                     <Button icon={<LogoutOutlined />} onClick={handleLogout} danger>Logout</Button>
                 </Space>
             </Header>

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { getSessions } from '../services/api';
 import type { SessionData } from '../services/api';
 import { Layout, Button, Typography, Space, Card, Tag, Row, Col, Empty, Spin, message } from 'antd';
-import { LogoutOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { LogoutOutlined, VideoCameraOutlined, MessageOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 const { Header, Content } = Layout;
@@ -48,6 +48,7 @@ export default function StudentDashboard() {
                 <Title level={4} style={{ margin: 0 }}>🎓 Student Dashboard</Title>
                 <Space>
                     <Text>Welcome, {user?.fullName}</Text>
+                    <Button icon={<MessageOutlined />} onClick={() => navigate('/chat')}>Messages</Button>
                     <Button icon={<LogoutOutlined />} onClick={handleLogout} danger>Logout</Button>
                 </Space>
             </Header>

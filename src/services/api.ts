@@ -120,3 +120,55 @@ export const endSession = async (sessionId: string) => {
     }
     return response.json();
 };
+
+// Chat APIs
+export interface ChatMessage {
+    messageId: string;
+    senderId: string;
+    senderName: string;
+    receiverId: string;
+    receiverName: string;
+    messageText: string;
+    timestamp: string;
+}
+
+export interface ChatPartner {
+    userId: string;
+    fullName: string;
+    email: string;
+    userType: string;
+}
+
+export const sendChatMessage = async (receiverId: string, messageText: string): Promise<ChatMessage> => {
+    const response = await fetch(`${API_BASE_URL}/chat/send`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ receiverId, messageText }),
+    });
+    if (!response.ok) throw new Error('Failed to send message');
+    return response.json();
+};
+
+export const getConversation = async (otherUserId: string): Promise<ChatMessage[]> => {
+    const response = await fetch(`${API_BASE_URL}/chat/conversation/${otherUserId}`, {
+        headers: authHeaders(),
+    });
+    if (!response.ok) throw new Error('Failed to load conversation');
+    return response.json();
+};
+
+export const getChatPartners = async (): Promise<ChatPartner[]> => {
+    const response = await fetch(`${API_BASE_URL}/chat/partners`, {
+        headers: authHeaders(),
+    });
+    if (!response.ok) throw new Error('Failed to load chat partners');
+    return response.json();
+};
+
+export const searchUsers = async (query: string): Promise<ChatPartner[]> => {
+    const response = await fetch(`${API_BASE_URL}/chat/users/search?q=${encodeURIComponent(query)}`, {
+        headers: authHeaders(),
+    });
+    if (!response.ok) throw new Error('Failed to search users');
+    return response.json();
+};

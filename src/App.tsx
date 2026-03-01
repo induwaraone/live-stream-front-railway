@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import StudentDashboard from './pages/StudentDashboard';
 import InstructorDashboard from './pages/InstructorDashboard';
 import ClassroomPage from './pages/ClassroomPage';
+import GlobalChatPage from './pages/GlobalChatPage';
 
 function App() {
     return (
@@ -31,6 +32,12 @@ function App() {
                     <Route path="/classroom/:sessionId" element={
                         <ProtectedRoute>
                             <ClassroomPage />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/chat" element={
+                        <ProtectedRoute>
+                            <GlobalChatPage />
                         </ProtectedRoute>
                     } />
                 </Routes>
