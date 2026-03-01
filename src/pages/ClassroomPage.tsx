@@ -9,8 +9,6 @@ export default function ClassroomPage() {
     const navigate = useNavigate();
     const [token, setToken] = useState<string>("");
 
-    // TODO: Phase 2 will replace this with the actual logged-in user
-    const participantName = "TestUser";
     // IMPORTANT: Replace with your actual LiveKit server URL
     const serverUrl = "ws://100.124.9.102:7880";
 
@@ -18,7 +16,7 @@ export default function ClassroomPage() {
         if (!sessionId) return;
         const getToken = async () => {
             try {
-                const fetchedToken = await fetchLiveKitToken(participantName, sessionId);
+                const fetchedToken = await fetchLiveKitToken(sessionId);
                 setToken(fetchedToken);
             } catch (error) {
                 console.error("Error joining room:", error);
