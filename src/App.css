@@ -1,1 +1,37 @@
-/* App-level styles — intentionally minimal, Ant Design handles the rest */
+/* App-level styles — Ant Design handles the rest */
+
+/* Sider menu styling */
+.dashboard-sider .ant-menu-item {
+    margin: 4px 8px;
+    border-radius: 8px;
+}
+
+.dashboard-sider .ant-menu-item-selected {
+    background: rgba(22, 119, 255, 0.15) !important;
+}
+
+/* Smooth card hover lift */
+.ant-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 10px;
+}
+
+.ant-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile-friendly adjustments */
+@media (max-width: 768px) {
+    .dashboard-header {
+        padding: 0 12px !important;
+    }
+
+    .ant-card-actions>li {
+        padding: 4px 0;
+    }
+
+    .ant-card-actions>li>span {
+        font-size: 12px;
+    }
+}

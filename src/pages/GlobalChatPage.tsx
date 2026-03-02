@@ -28,7 +28,6 @@ export default function GlobalChatPage() {
     const [sending, setSending] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // Load chat partners
     useEffect(() => {
         const load = async () => {
             setLoadingPartners(true);
@@ -44,7 +43,6 @@ export default function GlobalChatPage() {
         load();
     }, []);
 
-    // Load conversation when partner selected
     useEffect(() => {
         if (!selectedPartner) return;
         const loadConvo = async () => {
