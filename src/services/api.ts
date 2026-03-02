@@ -175,3 +175,33 @@ export const searchUsers = async (query: string): Promise<ChatPartner[]> => {
     if (!response.ok) throw new Error('Failed to search users');
     return response.json();
 };
+
+// Session Chat APIs
+export interface SessionChatMessage {
+    id: string;
+    sessionId: string;
+    senderId: string;
+    senderName: string;
+    messageText: string;
+    timestamp: string;
+}
+
+export const saveSessionChatMessage = async (
+    sessionId: string, senderName: string, messageText: string
+): Promise<SessionChatMessage> => {
+    const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}/chat`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ senderName, messageText }),
+    });
+    if (!response.ok) throw new Error('Failed to save session chat message');
+    return response.json();
+};
+
+export const getSessionChatHistory = async (sessionId: string): Promise<SessionChatMessage[]> => {
+    const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}/chat`, {
+        headers: authHeaders(),
+    });
+    if (!response.ok) throw new Error('Failed to load session chat history');
+    return response.json();
+};

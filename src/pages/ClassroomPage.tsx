@@ -5,6 +5,7 @@ import '@livekit/components-styles';
 import { fetchLiveKitToken } from '../services/api';
 import type { LiveKitTokenResponse } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import ChatPersistence from '../components/ChatPersistence';
 import { Layout, Button, Typography, Space, Spin, Result } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 
@@ -102,6 +103,7 @@ export default function ClassroomPage() {
                 >
                     <VideoConference />
                     <RoomAudioRenderer />
+                    <ChatPersistence sessionId={sessionId!} senderName={user?.fullName || 'Unknown'} />
                 </LiveKitRoom>
             </Content>
         </Layout>
