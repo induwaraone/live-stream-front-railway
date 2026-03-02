@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { getSessions, createSession, updateSession, deleteSession, endSession } from '../services/api';
 import type { SessionData } from '../services/api';
 import {
-    Button, Typography, Card, Tag, Row, Col, Modal, Form, Input, DatePicker,
+    Button, Typography, Card, Tag, Row, Col, Modal, Form, Input, DatePicker, Divider,
     message, Popconfirm, Empty, Spin, Space
 } from 'antd';
 import {
@@ -14,7 +14,7 @@ import {
 import DashboardLayout from '../components/DashboardLayout';
 import dayjs from 'dayjs';
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 const { TextArea } = Input;
 
 export default function InstructorDashboard() {
@@ -104,58 +104,74 @@ export default function InstructorDashboard() {
 
     return (
         <DashboardLayout role="Instructor">
-            <Space style={{ marginBottom: 24 }} wrap>
-                <Button type="primary" icon={<PlayCircleOutlined />} size="large" onClick={() => openCreateModal(false)}>
-                    Go Live Now
-                </Button>
-                <Button icon={<CalendarOutlined />} size="large" onClick={() => openCreateModal(true)}>
-                    Schedule Session
-                </Button>
-            </Space>
+            <div style={{
+                background: '#fff',
+                borderRadius: 10,
+                boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+                padding: 24,
+                minHeight: 'calc(100vh - 56px - 48px)',
+                display: 'flex',
+                flexDirection: 'column',
+            }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                    <Title level={4} style={{ margin: 0 }}>Sessions</Title>
+                    <Space wrap>
+                        <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => openCreateModal(false)}>
+                            Go Live Now
+                        </Button>
+                        <Button icon={<CalendarOutlined />} onClick={() => openCreateModal(true)}>
+                            Schedule Session
+                        </Button>
+                    </Space>
+                </div>
+                <Divider style={{ marginTop: 0, marginBottom: 24 }} />
 
-            {loading ? (
-                <div style={{ textAlign: 'center', paddingTop: 60 }}><Spin size="large" /></div>
-            ) : sessions.length === 0 ? (
-                <Empty description="No active sessions. Create one to get started!" />
-            ) : (
-                <Row gutter={[16, 16]}>
-                    {sessions.map(session => {
-                        const isMine = session.creatorId === user?.userId;
-                        return (
-                            <Col xs={24} sm={12} lg={8} key={session.sessionId}>
-                                <Card
-                                    title={session.title}
-                                    extra={<Tag color={statusColor(session.status)}>{session.status}</Tag>}
-                                    actions={[
-                                        ...(session.status === 'Live' ? [
-                                            <Button type="link" icon={<VideoCameraOutlined />} onClick={() => navigate(`/classroom/${session.sessionId}`)}>Join</Button>
-                                        ] : []),
-                                        ...(isMine && session.status === 'Live' ? [
-                                            <Popconfirm title="End this session?" onConfirm={() => handleEnd(session.sessionId)}>
-                                                <Button type="link" danger icon={<StopOutlined />}>End</Button>
-                                            </Popconfirm>
-                                        ] : []),
-                                        ...(isMine ? [
-                                            <Button type="link" icon={<EditOutlined />} onClick={() => openEditModal(session)}>Edit</Button>,
-                                            <Popconfirm title="Delete this session?" onConfirm={() => handleDelete(session.sessionId)}>
-                                                <Button type="link" danger icon={<DeleteOutlined />}>Delete</Button>
-                                            </Popconfirm>
-                                        ] : []),
-                                    ]}
-                                >
-                                    <Text type="secondary">{session.description || 'No description'}</Text>
-                                    <div style={{ marginTop: 8 }}>
-                                        <Text type="secondary" style={{ fontSize: 12 }}>
-                                            By {session.creatorName}
-                                            {session.scheduledStartTime && ` · Scheduled: ${dayjs(session.scheduledStartTime).format('MMM D, YYYY h:mm A')}`}
-                                        </Text>
-                                    </div>
-                                </Card>
-                            </Col>
-                        );
-                    })}
-                </Row>
-            )}
+                {loading ? (
+                    <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Spin size="large" /></div>
+                ) : sessions.length === 0 ? (
+                    <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <Empty description="No active sessions. Create one to get started!" />
+                    </div>
+                ) : (
+                    <Row gutter={[16, 16]}>
+                        {sessions.map(session => {
+                            const isMine = session.creatorId === user?.userId;
+                            return (
+                                <Col xs={24} sm={12} lg={8} key={session.sessionId}>
+                                    <Card
+                                        title={session.title}
+                                        extra={<Tag color={statusColor(session.status)}>{session.status}</Tag>}
+                                        actions={[
+                                            ...(session.status === 'Live' ? [
+                                                <Button type="link" icon={<VideoCameraOutlined />} onClick={() => navigate(`/classroom/${session.sessionId}`)}>Join</Button>
+                                            ] : []),
+                                            ...(isMine && session.status === 'Live' ? [
+                                                <Popconfirm title="End this session?" onConfirm={() => handleEnd(session.sessionId)}>
+                                                    <Button type="link" danger icon={<StopOutlined />}>End</Button>
+                                                </Popconfirm>
+                                            ] : []),
+                                            ...(isMine ? [
+                                                <Button type="link" icon={<EditOutlined />} onClick={() => openEditModal(session)}>Edit</Button>,
+                                                <Popconfirm title="Delete this session?" onConfirm={() => handleDelete(session.sessionId)}>
+                                                    <Button type="link" danger icon={<DeleteOutlined />}>Delete</Button>
+                                                </Popconfirm>
+                                            ] : []),
+                                        ]}
+                                    >
+                                        <Text type="secondary">{session.description || 'No description'}</Text>
+                                        <div style={{ marginTop: 8 }}>
+                                            <Text type="secondary" style={{ fontSize: 12 }}>
+                                                By {session.creatorName}
+                                                {session.scheduledStartTime && ` · Scheduled: ${dayjs(session.scheduledStartTime).format('MMM D, YYYY h:mm A')}`}
+                                            </Text>
+                                        </div>
+                                    </Card>
+                                </Col>
+                            );
+                        })}
+                    </Row>
+                )}
+            </div>
 
             <Modal
                 title={editSession ? 'Edit Session' : (isSchedule ? 'Schedule Session' : 'Create Live Session')}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Layout, Menu, Typography, Avatar, Badge, Grid } from 'antd';
+import { Layout, Menu, Typography, Avatar, Dropdown, Grid } from 'antd';
 import {
     VideoCameraOutlined,
     MessageOutlined,
@@ -9,19 +9,20 @@ import {
     UserOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
+    DownOutlined,
 } from '@ant-design/icons';
 import type { ReactNode } from 'react';
 
 const { Sider, Header, Content } = Layout;
-const { Text } = Typography;
+const { Text, Title } = Typography;
 const { useBreakpoint } = Grid;
 
 interface DashboardLayoutProps {
     children: ReactNode;
-    role: 'Student' | 'Instructor';
+    role?: 'Student' | 'Instructor';
 }
 
-export default function DashboardLayout({ children, role }: DashboardLayoutProps) {
+export default function DashboardLayout({ children, role: roleProp }: DashboardLayoutProps) {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
@@ -29,7 +30,8 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
     const isMobile = !screens.md;
     const [collapsed, setCollapsed] = useState(false);
 
-    // Auto-collapse on mobile
+    const role = roleProp || user?.userType || 'Student';
+
     useEffect(() => {
         setCollapsed(isMobile);
     }, [isMobile]);
@@ -47,27 +49,42 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
             icon: <MessageOutlined />,
             label: 'Messages',
         },
-        {
-            key: 'logout',
-            icon: <LogoutOutlined />,
-            label: 'Logout',
-            danger: true,
-        },
     ];
 
     const selectedKey = location.pathname.startsWith('/chat') ? '/chat' : dashboardPath;
 
     const handleMenuClick = (info: { key: string }) => {
-        if (info.key === 'logout') {
-            logout();
-            navigate('/login');
-        } else {
-            navigate(info.key);
-        }
+        navigate(info.key);
+        if (isMobile) setCollapsed(true);
     };
 
-    const roleColor = role === 'Instructor' ? '#722ed1' : '#1677ff';
-    const roleEmoji = role === 'Instructor' ? '👨‍🏫' : '🎓';
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
+
+    const avatarDropdownItems = {
+        items: [
+            {
+                key: 'name',
+                label: <Text strong>{user?.fullName}</Text>,
+                disabled: true,
+            },
+            {
+                key: 'role',
+                label: <Text type="secondary">{role}</Text>,
+                disabled: true,
+            },
+            { type: 'divider' as const },
+            {
+                key: 'logout',
+                icon: <LogoutOutlined />,
+                label: 'Logout',
+                danger: true,
+                onClick: handleLogout,
+            },
+        ],
+    };
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
@@ -90,37 +107,24 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
                     transition: 'all 0.2s ease',
                 }}
             >
-                {/* Logo / User Info */}
+                {/* Logo */}
                 <div style={{
-                    padding: collapsed && !isMobile ? '20px 12px' : '20px 16px',
+                    padding: collapsed && !isMobile ? '20px 0' : '20px 16px',
                     borderBottom: '1px solid rgba(255,255,255,0.08)',
                     textAlign: 'center',
                     transition: 'all 0.2s ease',
                 }}>
-                    <Avatar
-                        size={collapsed && !isMobile ? 36 : 56}
-                        icon={<UserOutlined />}
-                        style={{
-                            backgroundColor: roleColor,
-                            marginBottom: 8,
-                            transition: 'all 0.2s ease',
-                        }}
-                    />
-                    {(!collapsed || isMobile) && (
-                        <div>
-                            <Text style={{ color: '#fff', fontSize: 14, fontWeight: 600, display: 'block' }}>
-                                {user?.fullName}
-                            </Text>
-                            <Badge
-                                count={`${roleEmoji} ${role}`}
-                                style={{
-                                    backgroundColor: roleColor,
-                                    fontSize: 11,
-                                    marginTop: 4,
-                                }}
-                            />
-                        </div>
-                    )}
+                    <Title level={collapsed && !isMobile ? 5 : 3} style={{
+                        margin: 0,
+                        color: '#fff',
+                        fontWeight: 800,
+                        letterSpacing: 2,
+                        background: 'linear-gradient(135deg, #1677ff, #69b1ff)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                    }}>
+                        {collapsed && !isMobile ? 'Z' : 'Zolo'}
+                    </Title>
                 </div>
 
                 <Menu
@@ -152,7 +156,6 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
             )}
 
             <Layout>
-                {/* Top Header */}
                 <Header className="dashboard-header" style={{
                     background: '#fff',
                     padding: '0 24px',
@@ -167,7 +170,6 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
                     zIndex: 10,
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        {/* Mobile menu toggle */}
                         <span
                             onClick={() => setCollapsed(!collapsed)}
                             style={{
@@ -181,21 +183,34 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
                             {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                         </span>
                         <Text strong style={{ fontSize: 16 }}>
-                            {roleEmoji} {role} Dashboard
+                            {role} Dashboard
                         </Text>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Avatar size="small" icon={<UserOutlined />} style={{ backgroundColor: roleColor }} />
-                        {!isMobile && (
-                            <Text type="secondary" style={{ fontSize: 13 }}>
-                                {user?.fullName}
-                            </Text>
-                        )}
-                    </div>
+                    <Dropdown menu={avatarDropdownItems} placement="bottomRight" trigger={['click']}>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            cursor: 'pointer',
+                            padding: '4px 8px',
+                            borderRadius: 8,
+                            transition: 'background 0.2s ease',
+                        }}
+                            onMouseEnter={e => (e.currentTarget.style.background = '#f5f5f5')}
+                            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                        >
+                            <Avatar size="small" icon={<UserOutlined />} style={{ backgroundColor: '#8c8c8c' }} />
+                            {!isMobile && (
+                                <Text type="secondary" style={{ fontSize: 13 }}>
+                                    {user?.fullName}
+                                </Text>
+                            )}
+                            <DownOutlined style={{ fontSize: 10, color: '#8c8c8c' }} />
+                        </div>
+                    </Dropdown>
                 </Header>
 
-                {/* Main Content */}
                 <Content style={{
                     padding: isMobile ? 16 : 24,
                     background: '#f5f5f5',
