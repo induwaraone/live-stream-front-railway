@@ -138,6 +138,8 @@ export interface ChatPartner {
     fullName: string;
     email: string;
     userType: string;
+    lastMessage?: string;
+    lastMessageTime?: string;
 }
 
 export const sendChatMessage = async (receiverId: string, messageText: string): Promise<ChatMessage> => {
