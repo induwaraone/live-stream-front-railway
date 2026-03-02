@@ -27,6 +27,13 @@ export default function StudentDashboard() {
             }
         };
         fetchSessions();
+        // Re-fetch every 30s so Scheduled→Live transitions appear automatically
+        const interval = setInterval(async () => {
+            try {
+                setSessions(await getSessions());
+            } catch { /* silent */ }
+        }, 30000);
+        return () => clearInterval(interval);
     }, []);
 
     const statusColor = (status: string) => {

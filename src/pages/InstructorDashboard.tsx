@@ -39,7 +39,16 @@ export default function InstructorDashboard() {
         }
     };
 
-    useEffect(() => { fetchSessions(); }, []);
+    useEffect(() => {
+        fetchSessions();
+        // Re-fetch every 30s so Scheduled→Live transitions appear automatically
+        const interval = setInterval(async () => {
+            try {
+                setSessions(await getSessions());
+            } catch { /* silent */ }
+        }, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
     const openCreateModal = (schedule: boolean) => {
         setEditSession(null);
