@@ -487,9 +487,6 @@ export default function GlobalChatPage() {
                                 style={{ borderRadius: 8, flexShrink: 0 }}
                             />
                         </div>
-                        <Text type="secondary" style={{ fontSize: 11, marginTop: 4, display: 'block' }}>
-                            Press Enter to send, Shift+Enter for new line
-                        </Text>
                     </div>
                 </>
             )}
